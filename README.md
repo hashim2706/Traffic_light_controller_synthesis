@@ -38,12 +38,76 @@ The Liberty files are present in the library path,
 
 • Genus Script file with .tcl file Extension commands are executed one by one to synthesize the netlist.
 
-Synthesis RTL Schematic :
+## Traffic.v:
+```
+`timescale 1 ns / 1 ps
 
-Area report:
+module TrafficLight_tb();
 
-Power Report:
+reg rst, clk;
+wire [2:0] LED_NS, LED_WE;
 
-Result:
+TrafficLight L(clk, rst, LED_NS, LED_WE);
+
+initial begin 
+clk = 1;
+forever #1 clk = ~clk;
+end
+
+initial begin
+   rst = 1;
+
+#10 rst = 0;
+
+#4000 $finish;
+end
+
+endmodule
+
+
+```
+## Traffic_run.tcl:
+read_libs /cadence/install/FOUNDRY-01/digital/90nm/dig/lib/slow.lib
+read_hdl ALU.v
+elaborate
+read_sdc alu_design_constrains.sdc 
+syn_generic
+report_area
+syn_map
+report_area
+syn_opt
+report_area 
+report_area > alu_area.txt
+report_power > alu_power.txt
+write_hdl > alu_netlist.v
+gui_show
+
+## input constraints:
+```
+create_clock -name clk -period 1 -waveform {0 0.5} [get_ports "clk"]
+set_clock_transition -rise 0.1 [get_clocks "clk"]
+set_clock_transition -fall 0.1 [get_clocks "clk"]
+set_clock_uncertainty 0.01 [get_ports "clk"]
+set_input_delay -max 1.0 -clock clk [all_inputs]
+set_output_delay -max 1.0 -clock clk [all_outputs]
+
+```
+
+## Synthesis RTL Schematic :
+
+![WhatsApp Image 2025-05-20 at 14 41 20_33986c2b](https://github.com/user-attachments/assets/e1b30479-585e-4cc8-b9fb-ea0ee790f141)
+
+
+## Area report:
+
+![WhatsApp Image 2025-05-20 at 14 41 20_b7c9b736](https://github.com/user-attachments/assets/57fa1fb8-8d45-419b-82f1-e3fa4890f92c)
+
+
+## Power Report:
+
+![WhatsApp Image 2025-05-20 at 14 41 20_42ba5763](https://github.com/user-attachments/assets/d01f9a60-9a34-4186-a045-2ebb4c8b8d04)
+
+
+## Result:
 
 The generic netlist of Traffic Light Controller has been created, and area, power reports have been tabulated and generated using Genus.
