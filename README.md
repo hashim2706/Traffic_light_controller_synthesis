@@ -67,6 +67,7 @@ endmodule
 
 ```
 ## Traffic_run.tcl:
+```
 read_libs /cadence/install/FOUNDRY-01/digital/90nm/dig/lib/slow.lib
 read_hdl ALU.v
 elaborate
@@ -81,7 +82,7 @@ report_area > alu_area.txt
 report_power > alu_power.txt
 write_hdl > alu_netlist.v
 gui_show
-
+```
 ## input constraints:
 ```
 create_clock -name clk -period 1 -waveform {0 0.5} [get_ports "clk"]
